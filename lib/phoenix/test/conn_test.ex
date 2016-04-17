@@ -202,6 +202,9 @@ defmodule Phoenix.ConnTest do
       set the content-type to multipart. The map or list may contain
       other lists or maps and all entries will be normalized to string
       keys
+
+    * a struct - unlike other maps, a struct will be passed through as-is
+      without normalizing its entries
   """
   def dispatch(conn, endpoint, method, path_or_action, params_or_body \\ nil)
   def dispatch(%Plug.Conn{} = conn, endpoint, method, path_or_action, params_or_body) do
@@ -354,7 +357,7 @@ defmodule Phoenix.ConnTest do
     if given == status do
       body
     else
-      raise "expected response with status #{given}, got: #{status}"
+      raise "expected response with status #{given}, got: #{status}, with body:\n#{body}"
     end
   end
 
@@ -468,7 +471,7 @@ defmodule Phoenix.ConnTest do
 
   See `recycle/1` for more information.
   """
-  @spec recycle(Conn.t) :: Conn.t
+  @spec ensure_recycled(Conn.t) :: Conn.t
   def ensure_recycled(conn) do
     if conn.private[:phoenix_recycled] do
       conn

@@ -2,6 +2,13 @@
 
 ## 1.2.0-dev
 
+* Enhancements
+  * [Channel] Add `subscribe/2` and `unsubscribe/2` to handle external topic subscriptions for a socket.
+
+* Deprecations
+  * [Endpoint] Generated `subscribe/3` and `unsubscribe/2` clauses have been deprecated in favor of `subscribe/2` and `unsubscribe/1` which uses the caller's pid.
+  * [PubSub] `Phoenix.PubSub.subscribe/3` and `Phoenix.PubSub.unsubscribe/2` have been deprecated in favor of `subscribe/2` and `unsubscribe/1` which uses the caller's pid.
+
 ## 1.1.4 (2016-1-25)
 
 * Enhancements

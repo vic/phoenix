@@ -192,7 +192,7 @@ defmodule Phoenix.Channel.Server do
   end
 
   defp join(socket, reply, parent, ref) do
-    PubSub.subscribe(socket.pubsub_server, self(), socket.topic,
+    PubSub.subscribe(socket.pubsub_server, socket.topic,
       link: true,
       fastlane: {socket.transport_pid,
                  socket.serializer,
@@ -212,13 +212,6 @@ defmodule Phoenix.Channel.Server do
     handle_result({:stop, {:shutdown, :closed}, socket}, :handle_in)
   end
 
-  @doc false
-  def handle_info(%Message{topic: topic, event: "phx_join"}, %{topic: topic} = socket) do
-    Logger.info fn -> "#{inspect socket.channel} received join event with topic \"#{topic}\" but channel already joined" end
-
-    handle_result({:reply, {:error, %{reason: "already joined"}}, socket}, :handle_in)
-  end
-
   def handle_info(%Message{topic: topic, event: "phx_leave", ref: ref}, %{topic: topic} = socket) do
     handle_result({:stop, {:shutdown, :left}, :ok, put_in(socket.ref, ref)}, :handle_in)
   end
@@ -230,8 +223,7 @@ defmodule Phoenix.Channel.Server do
     |> handle_result(:handle_in)
   end
 
-  def handle_info(%Broadcast{topic: topic, event: event, payload: payload},
-                  %{topic: topic} = socket) do
+  def handle_info(%Broadcast{event: event, payload: payload}, socket) do
     event
     |> socket.channel.handle_out(payload, socket)
     |> handle_result(:handle_out)

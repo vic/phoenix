@@ -213,7 +213,7 @@ defmodule Phoenix.Integration.LongPollTest do
     end
 
     test "#{@mode}: publishing events" do
-      Phoenix.PubSub.subscribe(__MODULE__, self, "rooms:lobby")
+      Phoenix.PubSub.subscribe(__MODULE__, "rooms:lobby")
       session = join("/ws", "rooms:lobby", @mode)
 
       # Publish successfuly
@@ -237,7 +237,7 @@ defmodule Phoenix.Integration.LongPollTest do
 
       # Publish unauthorized event
       capture_log fn ->
-        Phoenix.PubSub.subscribe(__MODULE__, self, "rooms:private-room")
+        Phoenix.PubSub.subscribe(__MODULE__, "rooms:private-room")
         resp = poll :post, "/ws", session, %{
           "topic" => "rooms:private-room",
           "event" => "new_msg",
@@ -328,7 +328,7 @@ defmodule Phoenix.Integration.LongPollTest do
     [_phx_reply, _joined, _user_entered, _you_left_msg, chan_error] = resp.body["messages"]
 
     assert chan_error ==
-      %{"event" => "phx_error", "payload" => %{}, "topic" => "rooms:lobby", "ref" => nil}
+      %{"event" => "phx_error", "payload" => %{}, "topic" => "rooms:lobby", "ref" => "123"}
   end
 
   test "sends phx_close if a channel server normally exits" do
@@ -348,7 +348,7 @@ defmodule Phoenix.Integration.LongPollTest do
     [_phx_reply, _joined, _user_entered, _leave_reply, _you_left_msg, phx_close] = resp.body["messages"]
 
     assert phx_close ==
-      %{"event" => "phx_close", "payload" => %{}, "ref" => nil, "topic" => "rooms:lobby"}
+      %{"event" => "phx_close", "payload" => %{}, "ref" => "123", "topic" => "rooms:lobby"}
   end
 
   test "shuts down when receiving disconnect broadcasts on socket's id" do
